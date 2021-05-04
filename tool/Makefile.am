@@ -51,6 +51,7 @@ ethercat_SOURCES = \
 	CommandFoeWrite.cpp \
 	CommandGraph.cpp \
 	CommandMaster.cpp \
+	CommandJson.cpp \
 	CommandPcap.cpp \
 	CommandPdos.cpp \
 	CommandRegRead.cpp \
@@ -92,6 +93,7 @@ noinst_HEADERS = \
 	CommandFoeWrite.h \
 	CommandGraph.h \
 	CommandMaster.h \
+	CommandJson.h \
 	CommandPcap.h \
 	CommandPdos.h \
 	CommandRegRead.h \
@@ -147,6 +149,7 @@ REV = `if test -s $(top_srcdir)/revision; then \
 	fi`
 
 ethercat_CXXFLAGS = \
+  -std=c++11 \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/master \
 	-Wall -DREV=$(REV) \
