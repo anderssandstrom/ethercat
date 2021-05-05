@@ -8422,8 +8422,9 @@ static struct igb_rx_buffer *igb_get_rx_buffer(struct igb_ring *rx_ring,
 static void igb_put_rx_buffer(struct igb_ring *rx_ring,
 			      struct igb_rx_buffer *rx_buffer)
 {
-    /* EtherCAT always reuses the buffer */
-	if (netdev_priv(rx_ring->netdev)->ecdev || igb_can_reuse_rx_page(rx_buffer)) {
+        /* EtherCAT always reuses the buffer */
+	struct igb_adapter *adapter = netdev_priv(rx_ring->netdev);
+	if (adapter->ecdev || igb_can_reuse_rx_page(rx_buffer)) {
 		/* hand second half of page back to the ring */
 		igb_reuse_rx_page(rx_ring, rx_buffer);
 	} else {
