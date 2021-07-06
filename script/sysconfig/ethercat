@@ -97,7 +97,7 @@ MASTER0_DEVICE=""
 # has to be activated (with OS methods, for example 'ip link set ethX up'),
 # before the master is started, otherwise all frames will time out.
 #
-DEVICE_MODULES=""
+DEVICE_MODULES="igb"
 
 #
 # Flags for loading kernel modules.
