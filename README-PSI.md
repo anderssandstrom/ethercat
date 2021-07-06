@@ -1,6 +1,6 @@
 # EtherCAT master at PSI
 This is the EtherCAT master implementation that is currently used at PSI.
-It includes the official EtherLab IgH Master 1.5.2 with addition of all the
+It includes the official EtherLab IgH Master 1.5.2 with addition of all 
 community patches, and some PSI fixes.
 
 ### Hardware & OS
@@ -27,7 +27,7 @@ After downloading the repo:
 ### Usage
       TODO
 
-#### User ec_igb on the specific port only
+#### Use ec_igb on the specific port only
 In case only one port should run the dedicated driver this can be done:
 
 1. Find the BDF of the port we want to replace the driver (usual format XX:XX.X) using
