@@ -39,6 +39,9 @@
 #include <linux/version.h>
 #include <linux/if_arp.h> /* ARPHRD_ETHER */
 #include <linux/etherdevice.h>
+#include <linux/socket.h>
+#include <linux/net_tstamp.h>
+#include <linux/sockios.h>
 
 #include "../globals.h"
 #include "ecdev.h"
@@ -206,6 +209,7 @@ int ec_gen_device_create_socket(
 {
     int ret;
     struct sockaddr_ll sa;
+    int flags;
 
     dev->rx_buf = kmalloc(EC_GEN_RX_BUF_SIZE, GFP_KERNEL);
     if (!dev->rx_buf) {
@@ -225,8 +229,7 @@ int ec_gen_device_create_socket(
     }
 
     // Try timestamping
-    int flags;
-    flags   = SOF_TIMESTAMPING_TX_HARDWARE
+/*    flags   = SOF_TIMESTAMPING_TX_HARDWARE
             | SOF_TIMESTAMPING_RX_HARDWARE 
             | SOF_TIMESTAMPING_TX_SOFTWARE
             | SOF_TIMESTAMPING_RX_SOFTWARE 
@@ -235,10 +238,10 @@ int ec_gen_device_create_socket(
     ret = setsockopt(dev->socket), SOL_SOCKET, SO_TIMESTAMPING, &flags, sizeof(flags));
     if ( ret < 0) {
       printk("ERROR: setsockopt SO_TIMESTAMPING\n");
-      retur ret;
+      return ret;
     }
 
-    printk("SUCCESS!!: setsockopt\n");
+    printk("SUCCESS!!: setsockopt\n");*/
 
     printk(KERN_ERR PFX "Binding socket to interface %i (%s).\n",
             desc->ifindex, desc->name);
@@ -348,7 +351,7 @@ void ec_gen_device_poll(
     int ret, budget = 10; // FIXME
 
     ecdev_set_link(dev->ecdev, netif_carrier_ok(dev->used_netdev));
-
+    int msgRec = 0;
     do {
         iov.iov_base = dev->rx_buf;
         iov.iov_len = EC_GEN_RX_BUF_SIZE;
@@ -357,12 +360,39 @@ void ec_gen_device_poll(
         ret = kernel_recvmsg(dev->socket, &msg, &iov, 1, iov.iov_len,
                 MSG_DONTWAIT);
         if (ret > 0) {
+            msgRec = 1 ;
             ecdev_receive(dev->ecdev, dev->rx_buf, ret);
         } else if (ret < 0) {
             break;
         }
         budget--;
     } while (budget);
+
+
+    int level, type;
+    struct cmsghdr *cm;
+    struct timespec *ts = NULL;
+    int timestamped = 0;
+    for (cm = CMSG_FIRSTHDR(&msg); cm != NULL; cm = CMSG_NXTHDR(&msg, cm))
+    {
+      level = cm->cmsg_level;
+      type  = cm->cmsg_type;
+      if (SOL_SOCKET == level && SO_TIMESTAMPING == type) {
+        ts = (struct timespec *) CMSG_DATA(cm);
+        printk("HW TIMESTAMP %ld.%09ld\n", (long)ts[2].tv_sec, (long)ts[2].tv_nsec);
+        timestamped = 1;
+      }
+
+      if (SOL_SOCKET == level && SO_TIMESTAMPNS == type) {
+        ts = (struct timespec *) CMSG_DATA(cm);
+        printk("SW TIMESTAMP %ld.%09ld\n", (long)ts[0].tv_sec, (long)ts[0].tv_nsec);
+        timestamped = 1;
+      }
+    }
+
+    if(!timestamped) {
+      printk("NO HW TIMESTAMP_HEPP (msgRec %d )\n",msgRec);
+    }
 }
 
 /*****************************************************************************/
