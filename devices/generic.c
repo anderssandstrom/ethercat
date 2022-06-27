@@ -224,6 +224,16 @@ int ec_gen_device_create_socket(
         return ret;
     }
 
+    // Try timestamping
+    int flags;
+    flags   = SOF_TIMESTAMPING_TX_HARDWARE
+            | SOF_TIMESTAMPING_RX_HARDWARE 
+            | SOF_TIMESTAMPING_TX_SOFTWARE
+            | SOF_TIMESTAMPING_RX_SOFTWARE 
+            | SOF_TIMESTAMPING_RAW_HARDWARE;
+    if (setsockopt(dev->socket), SOL_SOCKET, SO_TIMESTAMPING, &flags, sizeof(flags)) < 0)
+        printk("ERROR: setsockopt SO_TIMESTAMPING\n");
+
     printk(KERN_ERR PFX "Binding socket to interface %i (%s).\n",
             desc->ifindex, desc->name);
 
