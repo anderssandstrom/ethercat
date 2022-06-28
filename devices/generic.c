@@ -380,6 +380,8 @@ void ec_gen_device_poll(
     struct timespec *hw_ts;
     int timestamped = 0;
     char ctrlBuf[CMSG_SPACE(sizeof(struct timespec))];
+    struct iovec entry;
+
 
     ecdev_set_link(dev->ecdev, netif_carrier_ok(dev->used_netdev));
     int msgRec = 0;
