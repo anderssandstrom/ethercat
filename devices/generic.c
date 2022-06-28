@@ -411,7 +411,7 @@ void ec_gen_device_poll(
             ret = kernel_recvmsg(dev->socket, &msg2, &iov, 1,sizeof(data),
                MSG_ERRQUEUE);
 
-            for (cm = CMSG_FIRSTHDR(&msg); cm != NULL; cm = CMSG_NXTHDR(&msg, cm))
+            for (cm = CMSG_FIRSTHDR(&msg2); cm != NULL; cm = CMSG_NXTHDR(&msg2, cm))
             {
               level = cm->cmsg_level;
               type  = cm->cmsg_type;
