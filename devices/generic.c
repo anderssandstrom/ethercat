@@ -259,23 +259,23 @@ int ec_gen_device_create_socket(
     //flags=SOF_TIMESTAMPING_RX_HARDWARE | SOF_TIMESTAMPING_RAW_HARDWARE;
     flags=SOF_TIMESTAMPING_RX_SOFTWARE;// | SOF_TIMESTAMPING_TX_SOFTWARE;
 
-    struct ifreq hwtstamp;
-    struct hwtstamp_config hwconfig;
-
-     // Set hardware timestamping
-     memset(&hwtstamp,0,sizeof(hwtstamp));
-     memset(&hwconfig,0,sizeof(hwconfig));
-     // Set ifr_name and ifr_data (see: man7.org/linux/man-pages/man7/netdevice.7.html)
-
-     strncpy(hwtstamp.ifr_name,"eno1",sizeof(hwtstamp.ifr_name));
-     hwtstamp.ifr_data=(void *)&hwconfig;
-     hwconfig.tx_type=HWTSTAMP_TX_OFF;
-     hwconfig.rx_filter=HWTSTAMP_FILTER_ALL;
-     // Issue request to the driver
-     if (ioctl(dev->socket,SIOCSHWTSTAMP,&hwtstamp)<0) {
-       printk("ERROR: ioctl SIOCSHWTSTAMP\n");
-     }
-
+//    struct ifreq hwtstamp;
+//    struct hwtstamp_config hwconfig;
+//
+//     // Set hardware timestamping
+//     memset(&hwtstamp,0,sizeof(hwtstamp));
+//     memset(&hwconfig,0,sizeof(hwconfig));
+//     // Set ifr_name and ifr_data (see: man7.org/linux/man-pages/man7/netdevice.7.html)
+//
+//     strncpy(hwtstamp.ifr_name,"eno1",sizeof(hwtstamp.ifr_name));
+//     hwtstamp.ifr_data=(void *)&hwconfig;
+//     hwconfig.tx_type=HWTSTAMP_TX_OFF;
+//     hwconfig.rx_filter=HWTSTAMP_FILTER_ALL;
+//     // Issue request to the driver
+//     if (ioctl(dev->socket,SIOCSHWTSTAMP,&hwtstamp)<0) {
+//       printk("ERROR: ioctl SIOCSHWTSTAMP\n");
+//     }
+//
     ret = kernel_setsockopt(dev->socket, SOL_SOCKET, SO_TIMESTAMPING, &flags, sizeof(flags));
     if ( ret < 0) {
       printk("ERROR: kernel_setsockopt SO_TIMESTAMPING\n");
@@ -393,7 +393,7 @@ void ec_gen_device_poll(
     } while (budget);
 
 
-    ret = kernel_recvmsg(dev->socket, &msg, &iov, 1, iov.iov_len, MSG_DONTWAIT | MSG_ERRQUEUE);
+    ret = kernel_recvmsg(dev->socket, &msg, &iov, 1, iov.iov_len, MSG_ERRQUEUE);
     
 
     int level, type;
