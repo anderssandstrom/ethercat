@@ -42,7 +42,7 @@
 #include <linux/socket.h>
 #include <linux/net_tstamp.h>
 #include <linux/sockios.h>
-
+#include <linux/net.h>
 #include "../globals.h"
 #include "ecdev.h"
 
@@ -234,14 +234,19 @@ int ec_gen_device_create_socket(
             | SOF_TIMESTAMPING_TX_SOFTWARE
             | SOF_TIMESTAMPING_RX_SOFTWARE 
             | SOF_TIMESTAMPING_RAW_HARDWARE;
+*/
 
-    ret = setsockopt(dev->socket), SOL_SOCKET, SO_TIMESTAMPING, &flags, sizeof(flags));
+    flags   = SOF_TIMESTAMPING_RX_HARDWARE;
+//            | SOF_TIMESTAMPING_RX_SOFTWARE
+//            | SOF_TIMESTAMPING_RAW_HARDWARE;
+
+    ret = kernel_setsockopt(dev->socket, SOL_SOCKET, SO_TIMESTAMPING, &flags, sizeof(flags));
     if ( ret < 0) {
       printk("ERROR: setsockopt SO_TIMESTAMPING\n");
       return ret;
     }
 
-    printk("SUCCESS!!: setsockopt\n");*/
+    printk("SUCCESS!!: setsockopt\n");
 
     printk(KERN_ERR PFX "Binding socket to interface %i (%s).\n",
             desc->ifindex, desc->name);
