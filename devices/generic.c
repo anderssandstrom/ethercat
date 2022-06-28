@@ -377,9 +377,9 @@ void ec_gen_device_poll(
 
     int level, type;
     struct cmsghdr *cm; 
-    struct scm_timestamping hw_ts;
+    struct timespec *hw_ts;
     int timestamped = 0;
-    char ctrlBuf[CMSG_SPACE(sizeof(struct scm_timestamping))];
+    char ctrlBuf[CMSG_SPACE(sizeof(struct timespec))];
 
     ecdev_set_link(dev->ecdev, netif_carrier_ok(dev->used_netdev));
     int msgRec = 0;
@@ -393,7 +393,7 @@ void ec_gen_device_poll(
         msg.msg_controllen = sizeof(ctrlBuf);
 
         memset(&msg, 0, sizeof(msg));
-        ret = kernel_recvmsg(dev->socket, &msg, &iov, 1, iov.iov_len+sizeof(struct scm_timestamping),
+        ret = kernel_recvmsg(dev->socket, &msg, &iov, 1, iov.iov_len+sizeof(struct timespec)*3,
                MSG_DONTWAIT);
 
         if (ret > 0) {
