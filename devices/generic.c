@@ -417,9 +417,9 @@ void ec_gen_device_poll(
       }
     }
 
-    if(!timestamped) {
-      printk("NO HW TIMESTAMP_HEPP (msgRec %d )\n",msgRec);
-    }
+    //if(!timestamped) {
+      //printk("NO HW TIMESTAMP_HEPP (msgRec %d )\n",msgRec);
+    //}
 }
 
 /*****************************************************************************/
