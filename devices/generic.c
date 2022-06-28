@@ -375,6 +375,11 @@ void ec_gen_device_poll(
 
     int ret, budget = 10; // FIXME
 
+    int level, type;
+    struct cmsghdr *cm; 
+    struct timespec *ts = NULL;
+    int timestamped = 0;
+
     ecdev_set_link(dev->ecdev, netif_carrier_ok(dev->used_netdev));
     int msgRec = 0;
     do {
@@ -385,30 +390,30 @@ void ec_gen_device_poll(
                MSG_DONTWAIT);
 
         if (ret > 0) {
-            // hepp
-            int level, type;
-            struct cmsghdr *cm;
-            struct timespec *ts = NULL;
-            int timestamped = 0;
-            for (cm = CMSG_FIRSTHDR(&msg2); cm != NULL; cm = CMSG_NXTHDR(&msg2, cm))
+            msgRec = 1 ;
+            ecdev_receive(dev->ecdev, dev->rx_buf, ret);
+
+            // should also be a timestamp
+            ret = kernel_recvmsg(dev->socket, &msg, &iov, 1, iov.iov_len,
+               MSG_ERRQUEUE);
+
+            for (cm = CMSG_FIRSTHDR(&msg); cm != NULL; cm = CMSG_NXTHDR(&msg, cm))
             {
               level = cm->cmsg_level;
               type  = cm->cmsg_type;
+
               if (SOL_SOCKET == level && SO_TIMESTAMPING == type) {
                 ts = (struct timespec *) CMSG_DATA(cm);
                 printk("HW TIMESTAMP %ld.%09ld\n", (long)ts[2].tv_sec, (long)ts[2].tv_nsec);
                 timestamped = 1;
               }
-        
+
               if (SOL_SOCKET == level && SO_TIMESTAMPNS == type) {
                 ts = (struct timespec *) CMSG_DATA(cm);
                 printk("SW TIMESTAMP %ld.%09ld\n", (long)ts[0].tv_sec, (long)ts[0].tv_nsec);
                 timestamped = 1;
               }
             }
-    
-            msgRec = 1 ;
-            ecdev_receive(dev->ecdev, dev->rx_buf, ret);
 
         } else if (ret < 0) {
             break;
