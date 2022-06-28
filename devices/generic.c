@@ -370,7 +370,7 @@ void ec_gen_device_poll(
         ec_gen_device_t *dev
         )
 {
-    struct msghdr msg;    
+    struct msghdr msg,msg2;    
     struct kvec iov;
 
     int ret, budget = 10; // FIXME
@@ -387,22 +387,29 @@ void ec_gen_device_poll(
         iov.iov_base = dev->rx_buf;
         iov.iov_len = EC_GEN_RX_BUF_SIZE;
         msg.msg_iovlen = 1;
-        msg.msg_name = NULL;
-        msg.msg_namelen = 0;
-        msg.msg_control = &ctrlBuf;
-        msg.msg_controllen = sizeof(ctrlBuf);
+        char data[256];
 
         memset(&msg, 0, sizeof(msg));
-        ret = kernel_recvmsg(dev->socket, &msg, &iov, 1, iov.iov_len+sizeof(struct timespec)*3,
+        ret = kernel_recvmsg(dev->socket, &msg, &iov, 1, iov.iov_len,
                MSG_DONTWAIT);
 
         if (ret > 0) {
             msgRec = 1 ;
             ecdev_receive(dev->ecdev, dev->rx_buf, ret);
+            
+            memset(&msg2, 0, sizeof(msg2));
+            msg2.msg_iov = &entry;
+            msg2.msg_iovlen = 1;
+            entry.iov_base = data;
+            entry.iov_len = sizeof(data);
+            msg2.msg_name = NULL;
+            msg2.msg_namelen = 0;
+            msg2.msg_control = &ctrlBuf;
+            msg2.msg_controllen = sizeof(ctrlBuf);
 
             // should also be a timestamp
-            //ret = kernel_recvmsg(dev->socket, &msg, &iov, 1, iov.iov_len,
-            //   MSG_ERRQUEUE);
+            ret = kernel_recvmsg(dev->socket, &msg2, &iov, 1,sizeof(data),
+               MSG_ERRQUEUE);
 
             for (cm = CMSG_FIRSTHDR(&msg); cm != NULL; cm = CMSG_NXTHDR(&msg, cm))
             {
