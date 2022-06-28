@@ -370,23 +370,30 @@ void ec_gen_device_poll(
         ec_gen_device_t *dev
         )
 {
-    struct msghdr msg;
+    struct msghdr msg;    
     struct kvec iov;
 
     int ret, budget = 10; // FIXME
 
     int level, type;
     struct cmsghdr *cm; 
-    struct timespec *ts = NULL;
+    struct scm_timestamping hw_ts;
     int timestamped = 0;
+    char ctrlBuf[CMSG_SPACE(sizeof(struct scm_timestamping))];
 
     ecdev_set_link(dev->ecdev, netif_carrier_ok(dev->used_netdev));
     int msgRec = 0;
     do {
         iov.iov_base = dev->rx_buf;
         iov.iov_len = EC_GEN_RX_BUF_SIZE;
+        msg.msg_iovlen = 1;
+        msg.msg_name = NULL;
+        msg.msg_namelen = 0;
+        msg.msg_control = &ctrlBuf;
+        msg.msg_controllen = sizeof(ctrlBuf);
+
         memset(&msg, 0, sizeof(msg));
-        ret = kernel_recvmsg(dev->socket, &msg, &iov, 1, iov.iov_len,
+        ret = kernel_recvmsg(dev->socket, &msg, &iov, 1, iov.iov_len+sizeof(struct scm_timestamping),
                MSG_DONTWAIT);
 
         if (ret > 0) {
@@ -394,8 +401,8 @@ void ec_gen_device_poll(
             ecdev_receive(dev->ecdev, dev->rx_buf, ret);
 
             // should also be a timestamp
-            ret = kernel_recvmsg(dev->socket, &msg, &iov, 1, iov.iov_len,
-               MSG_ERRQUEUE);
+            //ret = kernel_recvmsg(dev->socket, &msg, &iov, 1, iov.iov_len,
+            //   MSG_ERRQUEUE);
 
             for (cm = CMSG_FIRSTHDR(&msg); cm != NULL; cm = CMSG_NXTHDR(&msg, cm))
             {
@@ -403,14 +410,14 @@ void ec_gen_device_poll(
               type  = cm->cmsg_type;
 
               if (SOL_SOCKET == level && SO_TIMESTAMPING == type) {
-                ts = (struct timespec *) CMSG_DATA(cm);
-                printk("HW TIMESTAMP %ld.%09ld\n", (long)ts[2].tv_sec, (long)ts[2].tv_nsec);
+                hw_ts = (struct timespec *) CMSG_DATA(cm);
+                printk("HW TIMESTAMP %ld.%09ld\n", (long)hw_ts[2].tv_sec, (long)hw_ts[2].tv_nsec);
                 timestamped = 1;
               }
 
               if (SOL_SOCKET == level && SO_TIMESTAMPNS == type) {
-                ts = (struct timespec *) CMSG_DATA(cm);
-                printk("SW TIMESTAMP %ld.%09ld\n", (long)ts[0].tv_sec, (long)ts[0].tv_nsec);
+                hw_ts = (struct timespec *) CMSG_DATA(cm);
+                printk("SW TIMESTAMP %ld.%09ld\n", (long)hw_ts[0].tv_sec, (long)hw_ts[0].tv_nsec);
                 timestamped = 1;
               }
             }
