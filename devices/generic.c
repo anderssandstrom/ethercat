@@ -228,26 +228,6 @@ int ec_gen_device_create_socket(
         return ret;
     }
 
-    // Try timestamping
-/*    flags   = SOF_TIMESTAMPING_TX_HARDWARE
-            | SOF_TIMESTAMPING_RX_HARDWARE 
-            | SOF_TIMESTAMPING_TX_SOFTWARE
-            | SOF_TIMESTAMPING_RX_SOFTWARE 
-            | SOF_TIMESTAMPING_RAW_HARDWARE;
-*/
-
-    flags   = SOF_TIMESTAMPING_RX_HARDWARE;
-//            | SOF_TIMESTAMPING_RX_SOFTWARE
-//            | SOF_TIMESTAMPING_RAW_HARDWARE;
-
-    ret = kernel_setsockopt(dev->socket, SOL_SOCKET, SO_TIMESTAMPING, &flags, sizeof(flags));
-    if ( ret < 0) {
-      printk("ERROR: setsockopt SO_TIMESTAMPING\n");
-      return ret;
-    }
-
-    printk("SUCCESS!!: setsockopt\n");
-
     printk(KERN_ERR PFX "Binding socket to interface %i (%s).\n",
             desc->ifindex, desc->name);
 
@@ -264,6 +244,45 @@ int ec_gen_device_create_socket(
         return ret;
     }
 
+    // Try timestamping
+/*    flags   = SOF_TIMESTAMPING_TX_HARDWARE
+            | SOF_TIMESTAMPING_RX_HARDWARE 
+            | SOF_TIMESTAMPING_TX_SOFTWARE
+            | SOF_TIMESTAMPING_RX_SOFTWARE 
+            | SOF_TIMESTAMPING_RAW_HARDWARE;
+*/
+
+//    flags   = SOF_TIMESTAMPING_RX_HARDWARE;
+//            | SOF_TIMESTAMPING_RX_SOFTWARE
+//            | SOF_TIMESTAMPING_RAW_HARDWARE;
+
+    //flags=SOF_TIMESTAMPING_RX_HARDWARE | SOF_TIMESTAMPING_RAW_HARDWARE;
+    flags=SOF_TIMESTAMPING_RX_SOFTWARE;// | SOF_TIMESTAMPING_TX_SOFTWARE;
+
+    struct ifreq hwtstamp;
+    struct hwtstamp_config hwconfig;
+
+     // Set hardware timestamping
+     memset(&hwtstamp,0,sizeof(hwtstamp));
+     memset(&hwconfig,0,sizeof(hwconfig));
+     // Set ifr_name and ifr_data (see: man7.org/linux/man-pages/man7/netdevice.7.html)
+
+     strncpy(hwtstamp.ifr_name,"eno1",sizeof(hwtstamp.ifr_name));
+     hwtstamp.ifr_data=(void *)&hwconfig;
+     hwconfig.tx_type=HWTSTAMP_TX_OFF;
+     hwconfig.rx_filter=HWTSTAMP_FILTER_ALL;
+     // Issue request to the driver
+     if (ioctl(dev->socket,SIOCSHWTSTAMP,&hwtstamp)<0) {
+       printk("ERROR: ioctl SIOCSHWTSTAMP\n");
+     }
+
+    ret = kernel_setsockopt(dev->socket, SOL_SOCKET, SO_TIMESTAMPING, &flags, sizeof(flags));
+    if ( ret < 0) {
+      printk("ERROR: kernel_setsockopt SO_TIMESTAMPING\n");
+      return ret;
+    }
+
+    printk("SUCCESS!!: setsockopt\n");
     return 0;
 }
 
@@ -353,6 +372,7 @@ void ec_gen_device_poll(
 {
     struct msghdr msg;
     struct kvec iov;
+
     int ret, budget = 10; // FIXME
 
     ecdev_set_link(dev->ecdev, netif_carrier_ok(dev->used_netdev));
@@ -361,9 +381,8 @@ void ec_gen_device_poll(
         iov.iov_base = dev->rx_buf;
         iov.iov_len = EC_GEN_RX_BUF_SIZE;
         memset(&msg, 0, sizeof(msg));
-
         ret = kernel_recvmsg(dev->socket, &msg, &iov, 1, iov.iov_len,
-                MSG_DONTWAIT);
+               MSG_DONTWAIT);
         if (ret > 0) {
             msgRec = 1 ;
             ecdev_receive(dev->ecdev, dev->rx_buf, ret);
@@ -373,6 +392,9 @@ void ec_gen_device_poll(
         budget--;
     } while (budget);
 
+
+    ret = kernel_recvmsg(dev->socket, &msg, &iov, 1, iov.iov_len, MSG_DONTWAIT | MSG_ERRQUEUE);
+    
 
     int level, type;
     struct cmsghdr *cm;
