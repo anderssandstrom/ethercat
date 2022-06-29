@@ -220,6 +220,8 @@ EXTRA_DIST = \
 	igb-4.14-orig.h \
 	igb-4.19-ethercat.h \
 	igb-4.19-orig.h \
+	igb_ethtool-3.10-ethercat.c \
+	igb_ethtool-3.10-orig.c \
 	igb_ethtool-3.18-ethercat.c \
 	igb_ethtool-3.18-orig.c \
 	igb_ethtool-4.1-ethercat.c \
@@ -232,6 +234,8 @@ EXTRA_DIST = \
 	igb_ethtool-4.14-orig.c \
 	igb_ethtool-4.19-ethercat.c \
 	igb_ethtool-4.19-orig.c \
+    igb_hwmon-3.10-ethercat.c \
+	igb_hwmon-3.10-orig.c \
 	igb_hwmon-3.18-ethercat.c \
 	igb_hwmon-3.18-orig.c \
 	igb_hwmon-4.1-ethercat.c \
@@ -244,6 +248,8 @@ EXTRA_DIST = \
 	igb_hwmon-4.14-orig.c \
 	igb_hwmon-4.19-ethercat.c \
 	igb_hwmon-4.19-orig.c \
+	igb_main-3.10-ethercat.c \
+	igb_main-3.10-orig.c \
 	igb_main-3.18-ethercat.c \
 	igb_main-3.18-orig.c \
 	igb_main-4.1-ethercat.c \
@@ -256,6 +262,8 @@ EXTRA_DIST = \
 	igb_main-4.14-orig.c \
 	igb_main-4.19-ethercat.c \
 	igb_main-4.19-orig.c \
+	igb_ptp-3.10-ethercat.c \
+	igb_ptp-3.10-orig.c \
 	igb_ptp-3.18-ethercat.c \
 	igb_ptp-3.18-orig.c \
 	igb_ptp-4.1-ethercat.c \
