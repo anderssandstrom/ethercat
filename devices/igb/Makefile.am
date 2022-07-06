@@ -236,6 +236,8 @@ EXTRA_DIST = \
 	e1000_regs-4.14-orig.h \
 	e1000_regs-4.19-ethercat.h \
 	e1000_regs-4.19-orig.h \
+	igb-3.10-ethercat.h \
+	igb-3.10-orig.h \
 	igb-3.18-ethercat.h \
 	igb-3.18-orig.h \
 	igb-4.1-ethercat.h \
@@ -262,7 +264,7 @@ EXTRA_DIST = \
 	igb_ethtool-4.14-orig.c \
 	igb_ethtool-4.19-ethercat.c \
 	igb_ethtool-4.19-orig.c \
-    igb_hwmon-3.10-ethercat.c \
+	igb_hwmon-3.10-ethercat.c \
 	igb_hwmon-3.10-orig.c \
 	igb_hwmon-3.18-ethercat.c \
 	igb_hwmon-3.18-orig.c \
