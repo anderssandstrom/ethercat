@@ -28,6 +28,10 @@
 #------------------------------------------------------------------------------
 
 EXTRA_DIST = \
+	e1000_82575-3.10-ethercat.c \
+	e1000_82575-3.10-ethercat.h \
+	e1000_82575-3.10-orig.c \
+	e1000_82575-3.10-orig.h \
 	e1000_82575-3.18-ethercat.c \
 	e1000_82575-3.18-ethercat.h \
 	e1000_82575-3.18-orig.c \
@@ -52,6 +56,8 @@ EXTRA_DIST = \
 	e1000_82575-4.19-ethercat.h \
 	e1000_82575-4.19-orig.c \
 	e1000_82575-4.19-orig.h \
+    e1000_defines-3.10-ethercat.h \
+	e1000_defines-3.10-orig.h \
 	e1000_defines-3.18-ethercat.h \
 	e1000_defines-3.18-orig.h \
 	e1000_defines-4.1-ethercat.h \
@@ -64,6 +70,8 @@ EXTRA_DIST = \
 	e1000_defines-4.14-orig.h \
 	e1000_defines-4.19-ethercat.h \
 	e1000_defines-4.19-orig.h \
+    e1000_hw-3.10-ethercat.h \
+	e1000_hw-3.10-orig.h \
 	e1000_hw-3.18-ethercat.h \
 	e1000_hw-3.18-orig.h \
 	e1000_hw-4.1-ethercat.h \
@@ -76,6 +84,10 @@ EXTRA_DIST = \
 	e1000_hw-4.14-orig.h \
 	e1000_hw-4.19-ethercat.h \
 	e1000_hw-4.19-orig.h \
+	e1000_i210-3.10-ethercat.c \
+	e1000_i210-3.10-ethercat.h \
+	e1000_i210-3.10-orig.c \
+	e1000_i210-3.10-orig.h \
 	e1000_i210-3.18-ethercat.c \
 	e1000_i210-3.18-ethercat.h \
 	e1000_i210-3.18-orig.c \
@@ -100,6 +112,10 @@ EXTRA_DIST = \
 	e1000_i210-4.19-ethercat.h \
 	e1000_i210-4.19-orig.c \
 	e1000_i210-4.19-orig.h \
+	e1000_mac-3.10-ethercat.c \
+	e1000_mac-3.10-ethercat.h \
+	e1000_mac-3.10-orig.c \
+	e1000_mac-3.10-orig.h \
 	e1000_mac-3.18-ethercat.c \
 	e1000_mac-3.18-ethercat.h \
 	e1000_mac-3.18-orig.c \
@@ -124,6 +140,8 @@ EXTRA_DIST = \
 	e1000_mac-4.19-ethercat.h \
 	e1000_mac-4.19-orig.c \
 	e1000_mac-4.19-orig.h \
+    e1000_mbx-3.10-ethercat.c \
+	e1000_mbx-3.10-ethercat.h \
 	e1000_mbx-3.18-ethercat.c \
 	e1000_mbx-3.18-ethercat.h \
 	e1000_mbx-3.18-orig.c \
@@ -148,6 +166,10 @@ EXTRA_DIST = \
 	e1000_mbx-4.19-ethercat.h \
 	e1000_mbx-4.19-orig.c \
 	e1000_mbx-4.19-orig.h \
+	e1000_nvm-3.10-ethercat.c \
+	e1000_nvm-3.10-ethercat.h \
+	e1000_nvm-3.10-orig.c \
+	e1000_nvm-3.10-orig.h \
 	e1000_nvm-3.18-ethercat.c \
 	e1000_nvm-3.18-ethercat.h \
 	e1000_nvm-3.18-orig.c \
@@ -172,6 +194,10 @@ EXTRA_DIST = \
 	e1000_nvm-4.19-ethercat.h \
 	e1000_nvm-4.19-orig.c \
 	e1000_nvm-4.19-orig.h \
+	e1000_phy-3.10-ethercat.c \
+	e1000_phy-3.10-ethercat.h \
+	e1000_phy-3.10-orig.c \
+	e1000_phy-3.10-orig.h \
 	e1000_phy-3.18-ethercat.c \
 	e1000_phy-3.18-ethercat.h \
 	e1000_phy-3.18-orig.c \
@@ -196,6 +222,8 @@ EXTRA_DIST = \
 	e1000_phy-4.19-ethercat.h \
 	e1000_phy-4.19-orig.c \
 	e1000_phy-4.19-orig.h \
+	e1000_regs-3.10-ethercat.h \
+	e1000_regs-3.10-orig.h \
 	e1000_regs-3.18-ethercat.h \
 	e1000_regs-3.18-orig.h \
 	e1000_regs-4.1-ethercat.h \
